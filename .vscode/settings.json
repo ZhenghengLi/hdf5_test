@@ -1,5 +1,6 @@
 {
     "C_Cpp.default.includePath": [
-        "/usr/include/hdf5/serial"
+        "/usr/include/hdf5/serial",
+        "/opt/mark/ROOT/root-6.18.04/include"
     ]
 }
