@@ -19,18 +19,8 @@ trainId_dset00 = get_image_dset(h5file00, det_path, "trainId")
 trainId_dset01 = get_image_dset(h5file01, det_path, "trainId")
 trainId_dset02 = get_image_dset(h5file02, det_path, "trainId")
 
-trainId_arr_all = []
-trainId_arr_all += trainId_dset00
-trainId_arr_all += trainId_dset01
-trainId_arr_all += trainId_dset02
+print(trainId_dset00.shape)
 
-# plt.plot(trainId_dset00[:])
-# plt.plot(trainId_dset01[:])
-# plt.plot(trainId_dset02[:])
-plt.plot(trainId_arr_all)
-print(len(trainId_arr_all))
-
-plt.show()
 
 # h5files = [h5py.File(fn, 'r') for fn in file_paths]
 
