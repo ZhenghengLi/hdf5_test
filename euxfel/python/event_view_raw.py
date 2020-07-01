@@ -61,13 +61,13 @@ mod_gap = 30
 full_image_1 = compose_image(image_data_1, image_size, quad_offset, mod_gap)
 full_image_2 = compose_image(image_data_2, image_size, quad_offset, mod_gap)
 
-plt.subplot(121)
-pos1 = plt.imshow(full_image_1, cmap = "rainbow", vmin = 3000, vmax = 9000)
-# plt.colorbar(pos1)
+plt.figure(1)
+cset1 = plt.imshow(full_image_1, cmap = "rainbow", vmin = 3000, vmax = 9000)
+plt.colorbar(cset1)
 
-plt.subplot(122)
-pos2 = plt.imshow(full_image_2, cmap = "rainbow", vmin = 3000, vmax = 9000)
-# plt.colorbar(pos2)
+plt.figure(2)
+cset2 = plt.imshow(full_image_2, cmap = "rainbow", vmin = 3000, vmax = 9000)
+plt.colorbar(cset2)
 
-plt.tight_layout(pad = 0.7)
+plt.tight_layout()
 plt.show()
