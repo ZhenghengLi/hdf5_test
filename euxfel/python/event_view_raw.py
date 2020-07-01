@@ -35,14 +35,32 @@ file_paths = [
 
 image_h5files = [h5py.File(file_paths[x][index_mat[x][0]], 'r') for x in range(16)]
 image_dsets = [get_image_dset(x, det_path, 'data') for x in image_h5files]
+trainId_dsets = [get_image_dset(x, det_path, 'trainId') for x in image_h5files]
+pulseId_dsets = [get_image_dset(x, det_path, 'pulseId') for x in image_h5files]
+cellId_dsets = [get_image_dset(x, det_path, 'cellId') for x in image_h5files]
 
 image_data_1 = np.empty( (16, 512, 128) )
+image_data_1[:] = np.nan
 image_data_2 = np.empty( (16, 512, 128) )
+image_data_2[:] = np.nan
+
+trainId_arr = [-1 for x in range(16)]
+pulseId_arr = [-1 for x in range(16)]
+cellId_arr = [-1 for x in range(16)]
 
 for x in range(16):
+    cur_idx = index_mat[x][1]
+    if cur_idx < 0: continue
+    trainId_arr[x] = trainId_dsets[x][cur_idx][0]
+    pulseId_arr[x] = pulseId_dsets[x][cur_idx][0]
+    cellId_arr[x] = cellId_dsets[x][cur_idx][0]
     with image_dsets[x].astype('float64'):
-        image_data_1[x] = image_dsets[x][index_mat[x][1]][0]
-        image_data_2[x] = image_dsets[x][index_mat[x][1]][1]
+        image_data_1[x] = image_dsets[x][cur_idx][0]
+        image_data_2[x] = image_dsets[x][cur_idx][1]
+
+print("trainId:", trainId_arr)
+print("pulseId:", pulseId_arr)
+print("cellId:", cellId_arr)
 
 image_size = (1300, 1300)
 
