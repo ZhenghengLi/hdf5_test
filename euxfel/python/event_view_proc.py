@@ -35,14 +35,30 @@ file_paths = [
 
 image_h5files = [h5py.File(file_paths[x][index_mat[x][0]], 'r') for x in range(16)]
 image_dsets = [get_image_dset(x, det_path, 'data') for x in image_h5files]
+trainId_dsets = [get_image_dset(x, det_path, 'trainId') for x in image_h5files]
+pulseId_dsets = [get_image_dset(x, det_path, 'pulseId') for x in image_h5files]
+cellId_dsets = [get_image_dset(x, det_path, 'cellId') for x in image_h5files]
 
 image_data = np.empty( (16, 512, 128) )
+image_data[:] = np.nan
+trainId_arr = [-1 for x in range(16)]
+pulseId_arr = [-1 for x in range(16)]
+cellId_arr = [-1 for x in range(16)]
 
 for x in range(16):
+    cur_idx = index_mat[x][1]
+    if cur_idx < 0: continue
+    trainId_arr[x] = trainId_dsets[x][cur_idx][0]
+    pulseId_arr[x] = pulseId_dsets[x][cur_idx][0]
+    cellId_arr[x] = cellId_dsets[x][cur_idx]
     with image_dsets[x].astype('float64'):
-        image_data[x] = image_dsets[x][index_mat[x][1]]
+        image_data[x] = image_dsets[x][cur_idx]
 
-image_size = (800, 800)
+print("trainId:", trainId_arr)
+print("pulseId:", pulseId_arr)
+print("cellId:", cellId_arr)
+
+image_size = (1000, 1000)
 
 offset_1 = 26
 offset_2 = 4
@@ -58,7 +74,7 @@ mod_gap = 30
 
 full_image = compose_image(image_data, image_size, quad_offset, mod_gap)
 
-cset1 = plt.imshow(full_image, cmap = "rainbow", vmin = -100, vmax = 800)
+cset1 = plt.imshow(full_image, cmap = "rainbow", vmin = -10, vmax = 1000)
 plt.colorbar(cset1)
 
 plt.tight_layout()
