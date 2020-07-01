@@ -32,9 +32,8 @@ def _tailor_space(ld_pos, ru_pos, h, w):
         xb = w
     return [ya, yb, xa, xb, yc, yd, xc, xd]
 
-
 def compose_image(data, image_size = (1024, 1024), \
-    quad_offset = [(0, 0), (0, 0), (0, 0), (0, 0)], mod_gap = 2):
+    quad_offset = [(0, 0), (0, 0), (0, 0), (0, 0)], mod_gap = 4):
     if data.shape != (16, 512, 128):
         print('wrong data shape.')
         return

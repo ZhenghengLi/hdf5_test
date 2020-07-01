@@ -3,54 +3,65 @@
 import h5py
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 import os
 
-from common_func import get_image_dset
+from common_func import get_image_dset, compose_image
+
+if len(sys.argv) < 3:
+    print("usage: ", sys.argv[0], '<align_idx_file.h5>', '<event_num>')
+    exit(2)
+
+align_idx_filename = sys.argv[1]
+event_num = int(sys.argv[2])
+
+if event_num < 0:
+    print("event_num < 0")
+    exit(1)
+
+align_idx_h5file = h5py.File(align_idx_filename, 'r')
+align_idx_dset = align_idx_h5file['alignment_index']
+
+if event_num >= align_idx_dset.shape[0]:
+    print("event_num is too large.")
+    exit(1)
+
+index_mat = align_idx_dset[event_num]
 
 det_path = '/INSTRUMENT/SPB_DET_AGIPD1M-1/DET'
 file_paths = [
-    ['/DATA_HDD/mark/CXIDB/id83/r0243/raw/RAW-R0243-AGIPD%02d-S%05d.h5' % (x, y) for y in range(3)] for x in range(16) ]
+    ['/DATA_HDD/mark/CXIDB/id83/r0243/raw/RAW-R0243-AGIPD%02d-S%05d.h5' % (x, y)
+    for y in range(3)] for x in range(16) ]
 
-h5file00 = h5py.File(file_paths[0][0], 'r')
-h5file01 = h5py.File(file_paths[0][1], 'r')
-h5file02 = h5py.File(file_paths[0][2], 'r')
+image_h5files = [h5py.File(file_paths[x][index_mat[x][0]], 'r') for x in range(16)]
+image_dsets = [get_image_dset(x, det_path, 'data') for x in image_h5files]
 
-trainId_dset00 = get_image_dset(h5file00, det_path, "trainId")
-trainId_dset01 = get_image_dset(h5file01, det_path, "trainId")
-trainId_dset02 = get_image_dset(h5file02, det_path, "trainId")
+image_data_1 = np.empty( (16, 512, 128) )
+image_data_2 = np.empty( (16, 512, 128) )
 
-print(trainId_dset00.shape)
+for x in range(16):
+    with image_dsets[x].astype('float64'):
+        image_data_1[x] = image_dsets[x][index_mat[x][1]][0]
+        image_data_2[x] = image_dsets[x][index_mat[x][1]][1]
 
+image_size = (1300, 1300)
 
-# h5files = [h5py.File(fn, 'r') for fn in file_paths]
+offset_1 = 25
+offset_2 = 5
 
-# data_dsets = [get_image_dset(h5f, det_path, 'data') for h5f in h5files]
-# trainId_dsets = [get_image_dset(h5f, det_path, 'trainId') for h5f in h5files]
-# pulseId_dsets = [get_image_dset(h5f, det_path, 'pulseId') for h5f in h5files]
-# 
-# len_arr = [data_dsets[it].shape[0] for it in range(16)]
-# print(len_arr)
-# 
-# min_len = np.min(len_arr)
-# 
-# for x in range(500):
-#     trainId_target = trainId_dsets[0][x]
-#     for y in range(1, 16):
-#         if (trainId_dsets[y][x] != trainId_target):
-#             print("not match train Id found: (%d, %d)" % (x, y))
+quad_offset = [
+    (-offset_1, offset_2),
+    (offset_2, offset_1),
+    (offset_1, -offset_2),
+    (-offset_2, -offset_1)
+]
 
-# arr = None
+mod_gap = 30
 
-# plt.plot(trainId_dset[:])
+full_image_1 = compose_image(image_data_1, image_size, quad_offset, mod_gap)
+full_image_2 = compose_image(image_data_2, image_size, quad_offset, mod_gap)
 
-# plt.plot(list(pulseId_dset))
+pos = plt.imshow(full_image_1, cmap = "rainbow", vmin = 3000, vmax = 10000)
+plt.colorbar(pos)
 
-# with data_dset.astype('float'):
-#     arr = data_dset[0][0]
-# 
-# arr[10][10] = np.nan
-# 
-# pos = plt.contourf(arr, 100, cmap = "rainbow")
-# plt.colorbar(pos)
-
-# plt.show()
+plt.show()
