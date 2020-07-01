@@ -46,8 +46,8 @@ for x in range(16):
 
 image_size = (1300, 1300)
 
-offset_1 = 25
-offset_2 = 5
+offset_1 = 26
+offset_2 = 4
 
 quad_offset = [
     (-offset_1, offset_2),
@@ -61,7 +61,13 @@ mod_gap = 30
 full_image_1 = compose_image(image_data_1, image_size, quad_offset, mod_gap)
 full_image_2 = compose_image(image_data_2, image_size, quad_offset, mod_gap)
 
-pos = plt.imshow(full_image_1, cmap = "rainbow", vmin = 3000, vmax = 10000)
-plt.colorbar(pos)
+plt.subplot(121)
+pos1 = plt.imshow(full_image_1, cmap = "rainbow", vmin = 3000, vmax = 9000)
+# plt.colorbar(pos1)
 
+plt.subplot(122)
+pos2 = plt.imshow(full_image_2, cmap = "rainbow", vmin = 3000, vmax = 9000)
+# plt.colorbar(pos2)
+
+plt.tight_layout(pad = 0.7)
 plt.show()
