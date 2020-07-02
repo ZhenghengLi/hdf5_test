@@ -57,6 +57,12 @@ for x in range(16):
         image_data[x] = np.nan_to_num(image_dsets[x][cur_idx])
         image_data[x][mask_data > 0] = 0
 
+signal_sum = np.sum(image_data)
+signal_mean = signal_sum / (1024. * 1024)
+
+print("signal sum:", signal_sum)
+print("signal mean:", signal_mean)
+
 print("trainId:", trainId_arr)
 print("pulseId:", pulseId_arr)
 print("cellId:", cellId_arr)
@@ -77,7 +83,7 @@ mod_gap = 30
 
 full_image = compose_image(image_data, image_size, quad_offset, mod_gap)
 
-cset1 = plt.imshow(full_image, cmap = "rainbow", vmin = -10, vmax = 1000)
+cset1 = plt.imshow(full_image, cmap = "rainbow", vmin = -10, vmax = 5000)
 plt.colorbar(cset1)
 
 plt.tight_layout()
