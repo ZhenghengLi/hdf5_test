@@ -8,12 +8,12 @@ import os
 
 from common_func import get_image_dset, compose_image
 
-if len(sys.argv) < 3:
-    print("usage: ", sys.argv[0], '<align_idx_file.h5>', '<event_num>')
+if len(sys.argv) < 4:
+    print("usage: ", sys.argv[0], '<align_idx_file.h5>', '<start_event>', '<cell_offset')
     exit(2)
 
 align_idx_filename = sys.argv[1]
-event_num = int(sys.argv[2])
+event_num = int(sys.argv[2]) + int(sys.argv[3]) * 64
 
 if event_num < 0:
     print("event_num < 0")
@@ -38,6 +38,7 @@ image_dsets = [get_image_dset(x, det_path, 'data') for x in image_h5files]
 trainId_dsets = [get_image_dset(x, det_path, 'trainId') for x in image_h5files]
 pulseId_dsets = [get_image_dset(x, det_path, 'pulseId') for x in image_h5files]
 cellId_dsets = [get_image_dset(x, det_path, 'cellId') for x in image_h5files]
+mask_dsets = [get_image_dset(x, det_path, 'mask') for x in image_h5files]
 
 image_data = np.empty( (16, 512, 128) )
 image_data[:] = np.nan
@@ -51,14 +52,16 @@ for x in range(16):
     trainId_arr[x] = trainId_dsets[x][cur_idx][0]
     pulseId_arr[x] = pulseId_dsets[x][cur_idx][0]
     cellId_arr[x] = cellId_dsets[x][cur_idx]
+    mask_data = mask_dsets[x][cur_idx]
     with image_dsets[x].astype('float64'):
-        image_data[x] = image_dsets[x][cur_idx]
+        image_data[x] = np.nan_to_num(image_dsets[x][cur_idx])
+        image_data[x][mask_data > 0] = 0
 
 print("trainId:", trainId_arr)
 print("pulseId:", pulseId_arr)
 print("cellId:", cellId_arr)
 
-image_size = (1000, 1000)
+image_size = (1300, 1300)
 
 offset_1 = 26
 offset_2 = 4
